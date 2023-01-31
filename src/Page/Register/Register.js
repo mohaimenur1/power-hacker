@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import axios from "axios";
+import React from "react";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
 
@@ -11,8 +12,30 @@ const Register = () => {
 
   //   const [data, setData] = useState("");
 
-  const registerSubmit = (data) => {
-    console.log(data);
+  const registerSubmit = async (data) => {
+    if (data.password === data.cpassword) {
+      const userData = {
+        name: data.name,
+        email: data.email,
+        password: data.password,
+        cpassword: data.cpassword,
+      };
+      console.log(userData);
+      await axios
+        .post("http://localhost:5000/api/registration", userData)
+        .then((log) => {
+          if (log.data.success) {
+            alert("User registerd");
+          } else {
+            alert("This user Already Exist");
+          }
+        })
+        .catch((err) => {
+          alert(err);
+        });
+    } else {
+      alert("passwrod doesn't match");
+    }
   };
 
   return (
@@ -77,6 +100,25 @@ const Register = () => {
                   <p>At least 1 lower case</p>
                   <p>1 Specail Charecter</p>
                   <p>1 number</p>
+                </div>
+              )}
+            </div>
+            <div className="form-outline mb-4">
+              <label className="form-label" for="form2Example2">
+                Confirm Password
+              </label>
+              <input
+                type="password"
+                id="form2Example2"
+                className="form-control"
+                {...register("cpassword", {
+                  required: true,
+                  pattern: /^(?=.*[A-Z])(?=.*[0-9])(?=.*[#?!@$%^&*-])/,
+                })}
+              />
+              {errors.cpassword && (
+                <div className="text-danger mt-1">
+                  <p> password doesnot match</p>
                 </div>
               )}
             </div>
